@@ -1,0 +1,77 @@
+<!-- design phân trang dùng chung -->
+<!-- paginator và page_obj tự động có trong context khi thêm paginate_by vào view -->
+
+{% if is_paginated %}   <!-- nếu có hơn 1 trang, cái is_paginated này có sẵn trong ListView rồi-->
+    <nav aria-label="Topics pagination" class="mb-4">
+        <ul class="pagination">
+
+            {% if page_obj.number > 1 %}    <!-- nếu không phải trang đầu -->
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">First</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"> <!-- nếu là trang đầu thì cái nút First disabled --> 
+                    <span class="page-link">First</span> <!-- span để style cái text "First" vì ở đây không có link nên không có anchor để mà nhét class vào -->
+                </li>
+            {% endif %}
+
+            {% if page_obj.has_previous %}  <!-- nếu có trang trước --> 
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                        Previous
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"> <!-- ko có trang trước thì disabled cái chữ Previous -->
+                    <span class="page-link">
+                        Previous
+                    </span>
+                </li>
+            {% endif %}
+
+            {% for page_num in paginator.page_range %}  <!-- đánh 1 loạt các số -->
+                {% if page_obj.number == page_num %}
+                    <li class="page-item active">   <!-- current -->
+                        <span class="page-link">
+                            {{ page_num }}
+                            <span class="sr-only">  <!-- only for screen reader-->
+                                (current)
+                            </span>
+                        </span>
+                    </li>
+                {% elif page_num > page_obj.number|add:'-3' and page_num < page_obj.number|add:'3' %} <!-- hiển thị những trang không cách trang hiện tại quá 3 trang-->
+                    <li class="page-item">  <!-- nếu ko ph trang hiện tại thì hiển thị cái số bthg thôi -->
+                        <a class="page-link" href="?page={{ page_num }}">
+                            {{ page_num }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}  <!-- tương tự, nếu có trang sau -->
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                        Next
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Next
+                    </span>
+                </li>
+            {% endif %}
+
+            {% if page_obj.number != paginator.num_pages %} <!-- nếu chưa phải trang cuối --> 
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ paginator.num_pages }}">Last</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"> <!-- nếu là trang cuối thì cái nút Last disabled --> 
+                    <span class="page-link">Last</span>
+                </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+{% endif %}
